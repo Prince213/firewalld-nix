@@ -11,6 +11,7 @@
   iptables,
   kdePackages,
   kmod,
+  lib,
   libnotify,
   libsForQt5,
   libxml2,
@@ -106,4 +107,13 @@ stdenv.mkDerivation rec {
   postFixup = ''
     wrapPythonPrograms
   '';
+
+  meta = {
+    description = "Stateful zone based firewall daemon with D-Bus interface";
+    homepage = "https://firewalld.org/";
+    downloadPage = "https://github.com/firewalld/firewalld/releases";
+    license = lib.licenses.gpl2Plus;
+    sourceProvenance = [ lib.sourceTypes.fromSource ];
+    platforms = lib.platforms.linux;
+  };
 }
