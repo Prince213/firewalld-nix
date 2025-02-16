@@ -11,7 +11,10 @@
       perSystem =
         { pkgs, ... }:
         {
-          packages.firewalld = pkgs.callPackage ./package.nix { };
+          packages = rec {
+            default = firewalld;
+            firewalld = pkgs.callPackage ./package.nix { };
+          };
         };
     };
 }
