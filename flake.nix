@@ -7,5 +7,11 @@
   outputs =
     inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [ "x86_64-linux" ];
+      perSystem =
+        { pkgs, ... }:
+        {
+          packages.firewalld = pkgs.callPackage ./package.nix { };
+        };
     };
 }
