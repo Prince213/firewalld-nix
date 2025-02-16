@@ -5,19 +5,34 @@
   docbook_xml_dtd_42,
   fetchFromGitHub,
   glib,
+  gobject-introspection,
   intltool,
   ipset,
   iptables,
+  kdePackages,
   kmod,
+  libnotify,
+  libsForQt5,
   libxml2,
   libxslt,
+  networkmanager,
   pkg-config,
   python3,
   stdenv,
   sysctl,
-  kdePackages,
+  wrapGAppsHook3,
 }:
 
+let
+  python3' = python3.withPackages (
+    ps: with ps; [
+      dbus-python
+      nftables
+      pygobject3
+      pyqt5
+    ]
+  );
+in
 stdenv.mkDerivation rec {
   pname = "firewalld";
   version = "2.3.0";
@@ -38,19 +53,25 @@ stdenv.mkDerivation rec {
     ipset
     iptables
     kmod
+    libsForQt5.wrapQtAppsHook
     libxml2
     libxslt
     pkg-config
-    python3
+    python3'
+    python3'.pkgs.wrapPython
     sysctl
+    wrapGAppsHook3
   ];
 
   buildInputs = [
     glib
+    gobject-introspection
     ipset
     iptables
     kmod
-    python3
+    libnotify
+    networkmanager
+    python3'
     sysctl
   ];
 
@@ -72,5 +93,17 @@ stdenv.mkDerivation rec {
 
   preConfigure = ''
     ./autogen.sh
+  '';
+
+  dontWrapGApps = true;
+  dontWrapQtApps = true;
+
+  preFixup = ''
+    makeWrapperArgs+=("''${gappsWrapperArgs[@]}")
+    makeWrapperArgs+=("''${qtWrapperArgs[@]}")
+  '';
+
+  postFixup = ''
+    wrapPythonPrograms
   '';
 }
