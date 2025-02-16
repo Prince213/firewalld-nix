@@ -2,6 +2,7 @@
   autoconf,
   automake,
   docbook-xsl-nons,
+  docbook_xml_dtd_42,
   fetchFromGitHub,
   glib,
   intltool,
@@ -14,6 +15,7 @@
   python3,
   stdenv,
   sysctl,
+  kdePackages,
 }:
 
 stdenv.mkDerivation rec {
@@ -31,6 +33,7 @@ stdenv.mkDerivation rec {
     autoconf
     automake
     docbook-xsl-nons
+    docbook_xml_dtd_42
     intltool
     ipset
     iptables
@@ -46,6 +49,7 @@ stdenv.mkDerivation rec {
     glib
     ipset
     iptables
+    kdePackages.systemsettings
     kmod
     python3
     sysctl
