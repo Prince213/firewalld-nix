@@ -1,9 +1,19 @@
 {
   autoconf,
   automake,
+  docbook-xsl-nons,
   fetchFromGitHub,
+  glib,
   intltool,
+  ipset,
+  iptables,
+  kmod,
+  libxml2,
+  libxslt,
+  pkg-config,
+  python3,
   stdenv,
+  sysctl,
 }:
 
 stdenv.mkDerivation rec {
@@ -20,7 +30,29 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     autoconf
     automake
+    docbook-xsl-nons
     intltool
+    ipset
+    iptables
+    kmod
+    libxml2
+    libxslt
+    pkg-config
+    python3
+    sysctl
+  ];
+
+  buildInputs = [
+    glib
+    ipset
+    iptables
+    kmod
+    python3
+    sysctl
+  ];
+
+  patches = [
+    ./respect-xml-catalog-files-var.patch
   ];
 
   preConfigure = ''
