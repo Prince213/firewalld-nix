@@ -49,7 +49,6 @@ stdenv.mkDerivation rec {
     glib
     ipset
     iptables
-    kdePackages.systemsettings
     kmod
     python3
     sysctl
@@ -58,6 +57,18 @@ stdenv.mkDerivation rec {
   patches = [
     ./respect-xml-catalog-files-var.patch
   ];
+
+  postPatch = ''
+    for file in config/firewall-{applet,config}.desktop.in \
+      doc/xml/{firewalld.xml.in,firewalld.dbus.xml,firewall-offline-cmd.xml} \
+      src/{firewall-offline-cmd.in,firewall/config/__init__.py.in}
+    do
+      substituteInPlace $file --replace-fail /usr "$out"
+    done
+
+    substituteInPlace src/firewall-applet.in \
+      --replace-fail /usr "${kdePackages.systemsettings}"
+  '';
 
   preConfigure = ''
     ./autogen.sh
