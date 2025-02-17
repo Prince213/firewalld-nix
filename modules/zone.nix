@@ -34,6 +34,10 @@ in
             type = lib.types.nullOr lib.types.ints.s16;
             default = null;
           };
+          egressPriority = lib.mkOption {
+            type = lib.types.nullOr lib.types.ints.s16;
+            default = null;
+          };
         };
       }
     );
@@ -51,7 +55,10 @@ in
             lib.filterAttrsRecursive (_: value: value != null) (
               lib.mergeAttrsList [
                 (toXmlAttr { inherit (value) version target; })
-                { "@ingress-priority" = value.ingressPriority; }
+                {
+                  "@ingress-priority" = value.ingressPriority;
+                  "@egress-priority" = value.egressPriority;
+                }
               ]
             );
         };
