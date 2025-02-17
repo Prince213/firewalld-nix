@@ -8,6 +8,34 @@
 let
   cfg = config.services.firewalld;
   format = pkgs.formats.xml { };
+  portOptions = {
+    options = {
+      port = lib.mkOption {
+        type = lib.types.either lib.types.port (
+          lib.types.submodule {
+            options = {
+              from = lib.mkOption { type = lib.types.port; };
+              to = lib.mkOption { type = lib.types.port; };
+            };
+          }
+        );
+        apply =
+          value:
+          if builtins.isAttrs value then
+            "${toString value.from}-${toString value.to}"
+          else
+            "${toString value}";
+      };
+      protocol = lib.mkOption {
+        type = lib.types.enum [
+          "tcp"
+          "udp"
+          "sctp"
+          "dccp"
+        ];
+      };
+    };
+  };
 in
 {
   options.services.firewalld.services = lib.mkOption {
@@ -31,40 +59,15 @@ in
             default = null;
           };
           ports = lib.mkOption {
-            type = lib.types.listOf (
-              lib.types.submodule {
-                options = {
-                  port = lib.mkOption {
-                    type = lib.types.either lib.types.port (
-                      lib.types.submodule {
-                        options = {
-                          from = lib.mkOption { type = lib.types.port; };
-                          to = lib.mkOption { type = lib.types.port; };
-                        };
-                      }
-                    );
-                    apply =
-                      value:
-                      if builtins.isAttrs value then
-                        "${toString value.from}-${toString value.to}"
-                      else
-                        "${toString value}";
-                  };
-                  protocol = lib.mkOption {
-                    type = lib.types.enum [
-                      "tcp"
-                      "udp"
-                      "sctp"
-                      "dccp"
-                    ];
-                  };
-                };
-              }
-            );
+            type = lib.types.listOf (lib.types.submodule portOptions);
             default = [ ];
           };
           protocols = lib.mkOption {
             type = lib.types.listOf lib.types.nonEmptyStr;
+            default = [ ];
+          };
+          sourcePorts = lib.mkOption {
+            type = lib.types.listOf (lib.types.submodule portOptions);
             default = [ ];
           };
         };
@@ -87,6 +90,7 @@ in
               (if value.description == null then { } else { inherit (value) description; })
               { port = builtins.map namePrependAt value.ports; }
               { protocol = builtins.map (value: { "@value" = value; }) value.protocols; }
+              { source-port = builtins.map namePrependAt value.sourcePorts; }
             ];
         };
       }
