@@ -12,6 +12,7 @@ in
   imports = [
     ./service.nix
     ./settings.nix
+    ./zone.nix
   ];
 
   options.services.firewalld = {
