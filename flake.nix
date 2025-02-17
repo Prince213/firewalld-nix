@@ -5,15 +5,30 @@
   };
 
   outputs =
-    inputs@{ flake-parts, ... }:
+    inputs@{
+      self,
+      nixpkgs,
+      flake-parts,
+      ...
+    }:
     flake-parts.lib.mkFlake { inherit inputs; } {
+      flake = {
+        overlays.default = self: super: {
+          firewalld = super.callPackage ./package.nix { };
+        };
+      };
       systems = [ "x86_64-linux" ];
       perSystem =
-        { pkgs, ... }:
+        { system, pkgs, ... }:
         {
+          _module.args.pkgs = import nixpkgs {
+            inherit system;
+            overlays = [ self.overlays.default ];
+          };
+
           packages = rec {
             default = firewalld;
-            firewalld = pkgs.callPackage ./package.nix { };
+            inherit (pkgs) firewalld;
           };
         };
     };
