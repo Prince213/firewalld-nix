@@ -85,6 +85,10 @@ in
             };
             default = { };
           };
+          includes = lib.mkOption {
+            type = lib.types.listOf lib.types.nonEmptyStr;
+            default = [ ];
+          };
         };
       }
     );
@@ -108,6 +112,7 @@ in
                 { protocol = builtins.map (value: { "@value" = value; }) value.protocols; }
                 { source-port = builtins.map namePrependAt value.sourcePorts; }
                 { destination = namePrependAt value.destination; }
+                { include = builtins.map (value: { "@service" = value; }) value.includes; }
               ]
             );
         };
