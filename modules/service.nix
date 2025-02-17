@@ -89,6 +89,10 @@ in
             type = lib.types.listOf lib.types.nonEmptyStr;
             default = [ ];
           };
+          helpers = lib.mkOption {
+            type = lib.types.listOf lib.types.nonEmptyStr;
+            default = [ ];
+          };
         };
       }
     );
@@ -113,6 +117,7 @@ in
                 { source-port = builtins.map namePrependAt value.sourcePorts; }
                 { destination = namePrependAt value.destination; }
                 { include = builtins.map (value: { "@service" = value; }) value.includes; }
+                { helper = builtins.map (value: { "@name" = value; }) value.helpers; }
               ]
             );
         };
