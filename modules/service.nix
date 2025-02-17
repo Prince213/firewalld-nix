@@ -105,19 +105,19 @@ in
         source = format.generate "firewalld-service-${name}.xml" {
           service =
             let
-              namePrependAt = lib.mapAttrs' (name': lib.nameValuePair ("@" + name'));
+              toXmlAttr = lib.mapAttrs' (name': lib.nameValuePair ("@" + name'));
             in
             lib.filterAttrsRecursive (_: value: value != null) (
               lib.mergeAttrsList [
-                (namePrependAt { inherit (value) version; })
+                (toXmlAttr { inherit (value) version; })
                 { inherit (value) short; }
                 { inherit (value) description; }
-                { port = builtins.map namePrependAt value.ports; }
-                { protocol = builtins.map (value: namePrependAt { inherit value; }) value.protocols; }
-                { source-port = builtins.map namePrependAt value.sourcePorts; }
-                { destination = namePrependAt value.destination; }
-                { include = builtins.map (service: namePrependAt { inherit service; }) value.includes; }
-                { helper = builtins.map (name: namePrependAt { inherit name; }) value.helpers; }
+                { port = builtins.map toXmlAttr value.ports; }
+                { protocol = builtins.map (value: toXmlAttr { inherit value; }) value.protocols; }
+                { source-port = builtins.map toXmlAttr value.sourcePorts; }
+                { destination = toXmlAttr value.destination; }
+                { include = builtins.map (service: toXmlAttr { inherit service; }) value.includes; }
+                { helper = builtins.map (name: toXmlAttr { inherit name; }) value.helpers; }
               ]
             );
         };
