@@ -8,6 +8,8 @@
 let
   cfg = config.services.firewalld;
   format = pkgs.formats.xml { };
+  common = import ./common.nix { inherit lib; };
+  inherit (common) portOptions;
   inherit (lib) mkOption;
   inherit (lib.types)
     attrTag
@@ -88,6 +90,10 @@ in
           type = listOf nonEmptyStr;
           default = [ ];
         };
+        ports = mkOption {
+          type = listOf (submodule portOptions);
+          default = [ ];
+        };
       };
     });
   };
@@ -114,6 +120,7 @@ in
                   forward = if value.forward then "" else null;
                   inherit (value) short description;
                   service = builtins.map (toXmlAttr' "name") value.services;
+                  port = builtins.map toXmlAttr value.ports;
                 }
               ]
             );
