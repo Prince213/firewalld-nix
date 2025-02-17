@@ -111,14 +111,15 @@ in
             lib.filterAttrsRecursive (_: value: value != null) (
               lib.mergeAttrsList [
                 (toXmlAttr { inherit (value) version; })
-                { inherit (value) short; }
-                { inherit (value) description; }
-                { port = builtins.map toXmlAttr value.ports; }
-                { protocol = builtins.map (toXmlAttr' "value") value.protocols; }
-                { source-port = builtins.map toXmlAttr value.sourcePorts; }
-                { destination = toXmlAttr value.destination; }
-                { include = builtins.map (toXmlAttr' "service") value.includes; }
-                { helper = builtins.map (toXmlAttr' "name") value.helpers; }
+                {
+                  inherit (value) short description;
+                  port = builtins.map toXmlAttr value.ports;
+                  protocol = builtins.map (toXmlAttr' "value") value.protocols;
+                  source-port = builtins.map toXmlAttr value.sourcePorts;
+                  destination = toXmlAttr value.destination;
+                  include = builtins.map (toXmlAttr' "service") value.includes;
+                  helper = builtins.map (toXmlAttr' "name") value.helpers;
+                }
               ]
             );
         };
