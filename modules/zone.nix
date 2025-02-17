@@ -42,11 +42,11 @@ in
         source = format.generate "firewalld-zone-${name}.xml" {
           zone =
             let
-              namePrependAt = lib.mapAttrs' (name': lib.nameValuePair ("@" + name'));
+              toXmlAttr = lib.mapAttrs' (name': lib.nameValuePair ("@" + name'));
             in
             lib.filterAttrsRecursive (_: value: value != null) (
               lib.mergeAttrsList [
-                (namePrependAt { inherit (value) version target; })
+                (toXmlAttr { inherit (value) version target; })
               ]
             );
         };
