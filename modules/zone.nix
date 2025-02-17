@@ -50,6 +50,10 @@ in
             type = lib.types.nullOr lib.types.nonEmptyStr;
             default = null;
           };
+          services = lib.mkOption {
+            type = lib.types.listOf lib.types.nonEmptyStr;
+            default = [ ];
+          };
         };
       }
     );
@@ -73,6 +77,7 @@ in
                 {
                   interface = builtins.map (toXmlAttr' "name") value.interfaces;
                   inherit (value) short description;
+                  service = builtins.map (toXmlAttr' "name") value.services;
                 }
               ]
             );
