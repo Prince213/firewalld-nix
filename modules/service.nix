@@ -70,6 +70,21 @@ in
             type = lib.types.listOf (lib.types.submodule portOptions);
             default = [ ];
           };
+          destination = lib.mkOption {
+            type = lib.types.submodule {
+              options = {
+                ipv4 = lib.mkOption {
+                  type = lib.types.nullOr lib.types.nonEmptyStr;
+                  default = null;
+                };
+                ipv6 = lib.mkOption {
+                  type = lib.types.nullOr lib.types.nonEmptyStr;
+                  default = null;
+                };
+              };
+            };
+            default = { };
+          };
         };
       }
     );
@@ -92,6 +107,7 @@ in
                 { port = builtins.map namePrependAt value.ports; }
                 { protocol = builtins.map (value: { "@value" = value; }) value.protocols; }
                 { source-port = builtins.map namePrependAt value.sourcePorts; }
+                { destination = namePrependAt value.destination; }
               ]
             );
         };
