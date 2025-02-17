@@ -13,7 +13,7 @@ let
     ;
 in
 {
-  portOptions = {
+  portProtocolOptions = {
     options = {
       port = mkOption {
         type = either port (submodule {

@@ -9,7 +9,7 @@ let
   cfg = config.services.firewalld;
   format = pkgs.formats.xml { };
   common = import ./common.nix { inherit lib; };
-  inherit (common) portOptions;
+  inherit (common) portProtocolOptions;
   inherit (lib) mkOption;
   inherit (lib.types)
     attrsOf
@@ -40,7 +40,7 @@ in
           default = null;
         };
         ports = mkOption {
-          type = listOf (submodule portOptions);
+          type = listOf (submodule portProtocolOptions);
           default = [ ];
         };
         protocols = mkOption {
@@ -48,7 +48,7 @@ in
           default = [ ];
         };
         sourcePorts = mkOption {
-          type = listOf (submodule portOptions);
+          type = listOf (submodule portProtocolOptions);
           default = [ ];
         };
         destination = mkOption {
