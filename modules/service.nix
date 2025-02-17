@@ -30,6 +30,39 @@ in
             type = lib.types.nullOr lib.types.nonEmptyStr;
             default = null;
           };
+          ports = lib.mkOption {
+            type = lib.types.listOf (
+              lib.types.submodule {
+                options = {
+                  port = lib.mkOption {
+                    type = lib.types.either lib.types.port (
+                      lib.types.submodule {
+                        options = {
+                          from = lib.mkOption { type = lib.types.port; };
+                          to = lib.mkOption { type = lib.types.port; };
+                        };
+                      }
+                    );
+                    apply =
+                      value:
+                      if builtins.isAttrs value then
+                        "${toString value.from}-${toString value.to}"
+                      else
+                        "${toString value}";
+                  };
+                  protocol = lib.mkOption {
+                    type = lib.types.enum [
+                      "tcp"
+                      "udp"
+                      "sctp"
+                      "dccp"
+                    ];
+                  };
+                };
+              }
+            );
+            default = [ ];
+          };
         };
       }
     );
@@ -40,11 +73,16 @@ in
       name: value:
       lib.nameValuePair "firewalld/services/${name}.xml" {
         source = format.generate "firewalld-service-${name}.xml" {
-          service = lib.mergeAttrsList [
-            (if value.version == null then { } else { "@version" = value.version; })
-            (if value.short == null then { } else { inherit (value) short; })
-            (if value.description == null then { } else { inherit (value) description; })
-          ];
+          service =
+            let
+              namePrependAt = lib.mapAttrs' (name': lib.nameValuePair ("@" + name'));
+            in
+            lib.mergeAttrsList [
+              (if value.version == null then { } else { "@version" = value.version; })
+              (if value.short == null then { } else { inherit (value) short; })
+              (if value.description == null then { } else { inherit (value) description; })
+              { port = builtins.map namePrependAt value.ports; }
+            ];
         };
       }
     ) cfg.services;
