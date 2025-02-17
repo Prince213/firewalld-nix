@@ -38,6 +38,10 @@ in
             type = lib.types.nullOr lib.types.ints.s16;
             default = null;
           };
+          interfaces = lib.mkOption {
+            type = lib.types.listOf lib.types.nonEmptyStr;
+            default = [ ];
+          };
         };
       }
     );
@@ -51,6 +55,7 @@ in
           zone =
             let
               toXmlAttr = lib.mapAttrs' (name': lib.nameValuePair ("@" + name'));
+              toXmlAttr' = name: value: { "@${name}" = value; };
             in
             lib.filterAttrsRecursive (_: value: value != null) (
               lib.mergeAttrsList [
@@ -59,6 +64,7 @@ in
                   "@ingress-priority" = value.ingressPriority;
                   "@egress-priority" = value.egressPriority;
                 }
+                { interface = builtins.map (toXmlAttr' "name") value.interfaces; }
               ]
             );
         };
