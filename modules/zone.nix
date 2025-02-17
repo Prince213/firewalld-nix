@@ -40,12 +40,15 @@ in
       name: value:
       lib.nameValuePair "firewalld/zones/${name}.xml" {
         source = format.generate "firewalld-zone-${name}.xml" {
-          zone = lib.filterAttrsRecursive (_: value: value != null) (
-            lib.mergeAttrsList [
-              { "@version" = value.version; }
-              { "@target" = value.target; }
-            ]
-          );
+          zone =
+            let
+              namePrependAt = lib.mapAttrs' (name': lib.nameValuePair ("@" + name'));
+            in
+            lib.filterAttrsRecursive (_: value: value != null) (
+              lib.mergeAttrsList [
+                (namePrependAt { inherit (value) version target; })
+              ]
+            );
         };
       }
     ) cfg.zones;
