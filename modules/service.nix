@@ -84,14 +84,16 @@ in
             let
               namePrependAt = lib.mapAttrs' (name': lib.nameValuePair ("@" + name'));
             in
-            lib.mergeAttrsList [
-              (if value.version == null then { } else { "@version" = value.version; })
-              (if value.short == null then { } else { inherit (value) short; })
-              (if value.description == null then { } else { inherit (value) description; })
-              { port = builtins.map namePrependAt value.ports; }
-              { protocol = builtins.map (value: { "@value" = value; }) value.protocols; }
-              { source-port = builtins.map namePrependAt value.sourcePorts; }
-            ];
+            lib.filterAttrsRecursive (_: value: value != null) (
+              lib.mergeAttrsList [
+                { "@version" = value.version; }
+                { inherit (value) short; }
+                { inherit (value) description; }
+                { port = builtins.map namePrependAt value.ports; }
+                { protocol = builtins.map (value: { "@value" = value; }) value.protocols; }
+                { source-port = builtins.map namePrependAt value.sourcePorts; }
+              ]
+            );
         };
       }
     ) cfg.services;
