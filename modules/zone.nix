@@ -106,6 +106,10 @@ in
           type = bool;
           default = false;
         };
+        sourcePorts = mkOption {
+          type = listOf (submodule portOptions);
+          default = [ ];
+        };
       };
     });
   };
@@ -136,6 +140,7 @@ in
                   protocol = builtins.map (toXmlAttr' "value") value.protocols;
                   icmp-block = builtins.map (toXmlAttr' "name") value.icmpBlocks;
                   masquerade = if value.masquerade then "" else null;
+                  source-port = builtins.map toXmlAttr value.sourcePorts;
                 }
               ]
             );
