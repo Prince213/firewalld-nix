@@ -46,6 +46,10 @@ in
             type = lib.types.nullOr lib.types.nonEmptyStr;
             default = null;
           };
+          description = lib.mkOption {
+            type = lib.types.nullOr lib.types.nonEmptyStr;
+            default = null;
+          };
         };
       }
     );
@@ -69,7 +73,10 @@ in
                   "@egress-priority" = value.egressPriority;
                 }
                 { interface = builtins.map (toXmlAttr' "name") value.interfaces; }
-                { inherit (value) short; }
+                {
+                  inherit (value) short;
+                  inherit (value) description;
+                }
               ]
             );
         };
