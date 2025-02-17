@@ -102,6 +102,10 @@ in
           type = listOf nonEmptyStr;
           default = [ ];
         };
+        masquerade = mkOption {
+          type = bool;
+          default = false;
+        };
       };
     });
   };
@@ -131,6 +135,7 @@ in
                   port = builtins.map toXmlAttr value.ports;
                   protocol = builtins.map (toXmlAttr' "value") value.protocols;
                   icmp-block = builtins.map (toXmlAttr' "name") value.icmpBlocks;
+                  masquerade = if value.masquerade then "" else null;
                 }
               ]
             );
