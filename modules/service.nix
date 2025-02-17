@@ -109,15 +109,15 @@ in
             in
             lib.filterAttrsRecursive (_: value: value != null) (
               lib.mergeAttrsList [
-                { "@version" = value.version; }
+                (namePrependAt { inherit (value) version; })
                 { inherit (value) short; }
                 { inherit (value) description; }
                 { port = builtins.map namePrependAt value.ports; }
-                { protocol = builtins.map (value: { "@value" = value; }) value.protocols; }
+                { protocol = builtins.map (value: namePrependAt { inherit value; }) value.protocols; }
                 { source-port = builtins.map namePrependAt value.sourcePorts; }
                 { destination = namePrependAt value.destination; }
-                { include = builtins.map (value: { "@service" = value; }) value.includes; }
-                { helper = builtins.map (value: { "@name" = value; }) value.helpers; }
+                { include = builtins.map (service: namePrependAt { inherit service; }) value.includes; }
+                { helper = builtins.map (name: namePrependAt { inherit name; }) value.helpers; }
               ]
             );
         };
