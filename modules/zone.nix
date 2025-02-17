@@ -12,6 +12,7 @@ let
   inherit (lib.types)
     attrTag
     attrsOf
+    bool
     enum
     ints
     listOf
@@ -67,6 +68,10 @@ in
           });
           default = [ ];
         };
+        icmpBlockInversion = mkOption {
+          type = bool;
+          default = false;
+        };
         short = mkOption {
           type = nullOr nonEmptyStr;
           default = null;
@@ -101,6 +106,7 @@ in
                 {
                   interface = builtins.map (toXmlAttr' "name") value.interfaces;
                   source = builtins.map toXmlAttr value.sources;
+                  icmp-block-inversion = if value.icmpBlockInversion then "" else null;
                   inherit (value) short description;
                   service = builtins.map (toXmlAttr' "name") value.services;
                 }
