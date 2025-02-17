@@ -94,6 +94,10 @@ in
           type = listOf (submodule portOptions);
           default = [ ];
         };
+        protocols = mkOption {
+          type = listOf nonEmptyStr;
+          default = [ ];
+        };
       };
     });
   };
@@ -121,6 +125,7 @@ in
                   inherit (value) short description;
                   service = builtins.map (toXmlAttr' "name") value.services;
                   port = builtins.map toXmlAttr value.ports;
+                  protocol = builtins.map (toXmlAttr' "value") value.protocols;
                 }
               ]
             );
