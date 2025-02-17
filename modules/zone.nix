@@ -68,14 +68,11 @@ in
             lib.filterAttrsRecursive (_: value: value != null) (
               lib.mergeAttrsList [
                 (toXmlAttr { inherit (value) version target; })
+                (toXmlAttr' "ingress-priority" value.ingressPriority)
+                (toXmlAttr' "egress-priority" value.egressPriority)
                 {
-                  "@ingress-priority" = value.ingressPriority;
-                  "@egress-priority" = value.egressPriority;
-                }
-                { interface = builtins.map (toXmlAttr' "name") value.interfaces; }
-                {
-                  inherit (value) short;
-                  inherit (value) description;
+                  interface = builtins.map (toXmlAttr' "name") value.interfaces;
+                  inherit (value) short description;
                 }
               ]
             );
