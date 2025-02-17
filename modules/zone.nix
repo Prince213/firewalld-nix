@@ -8,55 +8,63 @@
 let
   cfg = config.services.firewalld;
   format = pkgs.formats.xml { };
+  inherit (lib) mkOption;
+  inherit (lib.types)
+    attrsOf
+    enum
+    ints
+    listOf
+    nonEmptyStr
+    nullOr
+    submodule
+    ;
 in
 {
-  options.services.firewalld.zones = lib.mkOption {
+  options.services.firewalld.zones = mkOption {
     description = ''
       firewalld zone configuration files. See {manpage}`firewalld.zone(5)`.
     '';
     default = { };
-    type = lib.types.attrsOf (
-      lib.types.submodule {
-        options = {
-          version = lib.mkOption {
-            type = lib.types.nullOr lib.types.nonEmptyStr;
-            default = null;
-          };
-          target = lib.mkOption {
-            type = lib.types.enum [
-              "ACCEPT"
-              "%%REJECT%%"
-              "DROP"
-            ];
-            default = "%%REJECT%%";
-          };
-          ingressPriority = lib.mkOption {
-            type = lib.types.nullOr lib.types.ints.s16;
-            default = null;
-          };
-          egressPriority = lib.mkOption {
-            type = lib.types.nullOr lib.types.ints.s16;
-            default = null;
-          };
-          interfaces = lib.mkOption {
-            type = lib.types.listOf lib.types.nonEmptyStr;
-            default = [ ];
-          };
-          short = lib.mkOption {
-            type = lib.types.nullOr lib.types.nonEmptyStr;
-            default = null;
-          };
-          description = lib.mkOption {
-            type = lib.types.nullOr lib.types.nonEmptyStr;
-            default = null;
-          };
-          services = lib.mkOption {
-            type = lib.types.listOf lib.types.nonEmptyStr;
-            default = [ ];
-          };
+    type = attrsOf (submodule {
+      options = {
+        version = mkOption {
+          type = nullOr nonEmptyStr;
+          default = null;
         };
-      }
-    );
+        target = mkOption {
+          type = enum [
+            "ACCEPT"
+            "%%REJECT%%"
+            "DROP"
+          ];
+          default = "%%REJECT%%";
+        };
+        ingressPriority = mkOption {
+          type = nullOr ints.s16;
+          default = null;
+        };
+        egressPriority = mkOption {
+          type = nullOr ints.s16;
+          default = null;
+        };
+        interfaces = mkOption {
+          type = listOf nonEmptyStr;
+          default = [ ];
+        };
+        short = mkOption {
+          type = nullOr nonEmptyStr;
+          default = null;
+        };
+        description = mkOption {
+          type = nullOr nonEmptyStr;
+          default = null;
+        };
+        services = mkOption {
+          type = listOf nonEmptyStr;
+          default = [ ];
+        };
+      };
+    });
   };
 
   config = lib.mkIf cfg.enable {
