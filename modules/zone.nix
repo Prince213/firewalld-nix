@@ -22,6 +22,14 @@ in
             type = lib.types.nullOr lib.types.nonEmptyStr;
             default = null;
           };
+          target = lib.mkOption {
+            type = lib.types.enum [
+              "ACCEPT"
+              "%%REJECT%%"
+              "DROP"
+            ];
+            default = "%%REJECT%%";
+          };
         };
       }
     );
@@ -35,6 +43,7 @@ in
           zone = lib.filterAttrsRecursive (_: value: value != null) (
             lib.mergeAttrsList [
               { "@version" = value.version; }
+              { "@target" = value.target; }
             ]
           );
         };
