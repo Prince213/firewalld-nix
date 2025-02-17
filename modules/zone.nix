@@ -98,6 +98,10 @@ in
           type = listOf nonEmptyStr;
           default = [ ];
         };
+        icmpBlocks = mkOption {
+          type = listOf nonEmptyStr;
+          default = [ ];
+        };
       };
     });
   };
@@ -126,6 +130,7 @@ in
                   service = builtins.map (toXmlAttr' "name") value.services;
                   port = builtins.map toXmlAttr value.ports;
                   protocol = builtins.map (toXmlAttr' "value") value.protocols;
+                  icmp-block = builtins.map (toXmlAttr' "name") value.icmpBlocks;
                 }
               ]
             );
