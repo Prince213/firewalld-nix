@@ -8,17 +8,26 @@
 let
   cfg = config.services.firewalld;
   format = pkgs.formats.xml { };
+  inherit (lib) mkOption;
+  inherit (lib.types)
+    attrsOf
+    either
+    enum
+    listOf
+    nonEmptyStr
+    nullOr
+    port
+    submodule
+    ;
   portOptions = {
     options = {
-      port = lib.mkOption {
-        type = lib.types.either lib.types.port (
-          lib.types.submodule {
-            options = {
-              from = lib.mkOption { type = lib.types.port; };
-              to = lib.mkOption { type = lib.types.port; };
-            };
-          }
-        );
+      port = mkOption {
+        type = either port (submodule {
+          options = {
+            from = mkOption { type = port; };
+            to = mkOption { type = port; };
+          };
+        });
         apply =
           value:
           if builtins.isAttrs value then
@@ -26,8 +35,8 @@ let
           else
             "${toString value}";
       };
-      protocol = lib.mkOption {
-        type = lib.types.enum [
+      protocol = mkOption {
+        type = enum [
           "tcp"
           "udp"
           "sctp"
@@ -38,64 +47,62 @@ let
   };
 in
 {
-  options.services.firewalld.services = lib.mkOption {
+  options.services.firewalld.services = mkOption {
     description = ''
       firewalld service configuration files. See {manpage}`firewalld.service(5)`.
     '';
     default = { };
-    type = lib.types.attrsOf (
-      lib.types.submodule {
-        options = {
-          version = lib.mkOption {
-            type = lib.types.nullOr lib.types.nonEmptyStr;
-            default = null;
-          };
-          short = lib.mkOption {
-            type = lib.types.nullOr lib.types.nonEmptyStr;
-            default = null;
-          };
-          description = lib.mkOption {
-            type = lib.types.nullOr lib.types.nonEmptyStr;
-            default = null;
-          };
-          ports = lib.mkOption {
-            type = lib.types.listOf (lib.types.submodule portOptions);
-            default = [ ];
-          };
-          protocols = lib.mkOption {
-            type = lib.types.listOf lib.types.nonEmptyStr;
-            default = [ ];
-          };
-          sourcePorts = lib.mkOption {
-            type = lib.types.listOf (lib.types.submodule portOptions);
-            default = [ ];
-          };
-          destination = lib.mkOption {
-            type = lib.types.submodule {
-              options = {
-                ipv4 = lib.mkOption {
-                  type = lib.types.nullOr lib.types.nonEmptyStr;
-                  default = null;
-                };
-                ipv6 = lib.mkOption {
-                  type = lib.types.nullOr lib.types.nonEmptyStr;
-                  default = null;
-                };
+    type = attrsOf (submodule {
+      options = {
+        version = mkOption {
+          type = nullOr nonEmptyStr;
+          default = null;
+        };
+        short = mkOption {
+          type = nullOr nonEmptyStr;
+          default = null;
+        };
+        description = mkOption {
+          type = nullOr nonEmptyStr;
+          default = null;
+        };
+        ports = mkOption {
+          type = listOf (submodule portOptions);
+          default = [ ];
+        };
+        protocols = mkOption {
+          type = listOf nonEmptyStr;
+          default = [ ];
+        };
+        sourcePorts = mkOption {
+          type = listOf (submodule portOptions);
+          default = [ ];
+        };
+        destination = mkOption {
+          type = submodule {
+            options = {
+              ipv4 = mkOption {
+                type = nullOr nonEmptyStr;
+                default = null;
+              };
+              ipv6 = mkOption {
+                type = nullOr nonEmptyStr;
+                default = null;
               };
             };
-            default = { };
           };
-          includes = lib.mkOption {
-            type = lib.types.listOf lib.types.nonEmptyStr;
-            default = [ ];
-          };
-          helpers = lib.mkOption {
-            type = lib.types.listOf lib.types.nonEmptyStr;
-            default = [ ];
-          };
+          default = { };
         };
-      }
-    );
+        includes = mkOption {
+          type = listOf nonEmptyStr;
+          default = [ ];
+        };
+        helpers = mkOption {
+          type = listOf nonEmptyStr;
+          default = [ ];
+        };
+      };
+    });
   };
 
   config = lib.mkIf cfg.enable {
