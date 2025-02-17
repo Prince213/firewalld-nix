@@ -8,43 +8,16 @@
 let
   cfg = config.services.firewalld;
   format = pkgs.formats.xml { };
+  common = import ./common.nix { inherit lib; };
+  inherit (common) portOptions;
   inherit (lib) mkOption;
   inherit (lib.types)
     attrsOf
-    either
-    enum
     listOf
     nonEmptyStr
     nullOr
-    port
     submodule
     ;
-  portOptions = {
-    options = {
-      port = mkOption {
-        type = either port (submodule {
-          options = {
-            from = mkOption { type = port; };
-            to = mkOption { type = port; };
-          };
-        });
-        apply =
-          value:
-          if builtins.isAttrs value then
-            "${toString value.from}-${toString value.to}"
-          else
-            "${toString value}";
-      };
-      protocol = mkOption {
-        type = enum [
-          "tcp"
-          "udp"
-          "sctp"
-          "dccp"
-        ];
-      };
-    };
-  };
 in
 {
   options.services.firewalld.services = mkOption {
