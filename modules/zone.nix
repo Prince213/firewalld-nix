@@ -10,12 +10,14 @@ let
   format = pkgs.formats.xml { };
   inherit (lib) mkOption;
   inherit (lib.types)
+    attrTag
     attrsOf
     enum
     ints
     listOf
     nonEmptyStr
     nullOr
+    strMatching
     submodule
     ;
 in
@@ -51,6 +53,20 @@ in
           type = listOf nonEmptyStr;
           default = [ ];
         };
+        sources = mkOption {
+          type = listOf (attrTag {
+            address = mkOption {
+              type = nonEmptyStr;
+            };
+            mac = mkOption {
+              type = strMatching "([[:xdigit:]]{2}:){5}[[:xdigit:]]{2}";
+            };
+            ipset = mkOption {
+              type = nonEmptyStr;
+            };
+          });
+          default = [ ];
+        };
         short = mkOption {
           type = nullOr nonEmptyStr;
           default = null;
@@ -84,6 +100,7 @@ in
                 (toXmlAttr' "egress-priority" value.egressPriority)
                 {
                   interface = builtins.map (toXmlAttr' "name") value.interfaces;
+                  source = builtins.map toXmlAttr value.sources;
                   inherit (value) short description;
                   service = builtins.map (toXmlAttr' "name") value.services;
                 }
