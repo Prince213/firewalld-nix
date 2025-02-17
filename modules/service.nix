@@ -106,6 +106,7 @@ in
           service =
             let
               toXmlAttr = lib.mapAttrs' (name': lib.nameValuePair ("@" + name'));
+              toXmlAttr' = name: value: { "@${name}" = value; };
             in
             lib.filterAttrsRecursive (_: value: value != null) (
               lib.mergeAttrsList [
@@ -113,11 +114,11 @@ in
                 { inherit (value) short; }
                 { inherit (value) description; }
                 { port = builtins.map toXmlAttr value.ports; }
-                { protocol = builtins.map (value: toXmlAttr { inherit value; }) value.protocols; }
+                { protocol = builtins.map (toXmlAttr' "value") value.protocols; }
                 { source-port = builtins.map toXmlAttr value.sourcePorts; }
                 { destination = toXmlAttr value.destination; }
-                { include = builtins.map (service: toXmlAttr { inherit service; }) value.includes; }
-                { helper = builtins.map (name: toXmlAttr { inherit name; }) value.helpers; }
+                { include = builtins.map (toXmlAttr' "service") value.includes; }
+                { helper = builtins.map (toXmlAttr' "name") value.helpers; }
               ]
             );
         };
