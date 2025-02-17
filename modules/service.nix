@@ -18,6 +18,10 @@ in
     type = lib.types.attrsOf (
       lib.types.submodule {
         options = {
+          version = lib.mkOption {
+            type = lib.types.nullOr lib.types.nonEmptyStr;
+            default = null;
+          };
         };
       }
     );
@@ -28,8 +32,9 @@ in
       name: value:
       lib.nameValuePair "firewalld/services/${name}.xml" {
         source = format.generate "firewalld-service-${name}.xml" {
-          service = {
-          };
+          service = lib.mergeAttrsList [
+            (if value.version == null then { } else { "@version" = value.version; })
+          ];
         };
       }
     ) cfg.services;
