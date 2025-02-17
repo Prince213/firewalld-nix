@@ -18,6 +18,10 @@ in
     type = lib.types.attrsOf (
       lib.types.submodule {
         options = {
+          version = lib.mkOption {
+            type = lib.types.nullOr lib.types.nonEmptyStr;
+            default = null;
+          };
         };
       }
     );
@@ -28,8 +32,11 @@ in
       name: value:
       lib.nameValuePair "firewalld/zones/${name}.xml" {
         source = format.generate "firewalld-zone-${name}.xml" {
-          zone = {
-          };
+          zone = lib.filterAttrsRecursive (_: value: value != null) (
+            lib.mergeAttrsList [
+              { "@version" = value.version; }
+            ]
+          );
         };
       }
     ) cfg.zones;
