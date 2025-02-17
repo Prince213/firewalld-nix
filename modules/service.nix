@@ -22,6 +22,10 @@ in
             type = lib.types.nullOr lib.types.nonEmptyStr;
             default = null;
           };
+          short = lib.mkOption {
+            type = lib.types.nullOr lib.types.nonEmptyStr;
+            default = null;
+          };
         };
       }
     );
@@ -34,6 +38,7 @@ in
         source = format.generate "firewalld-service-${name}.xml" {
           service = lib.mergeAttrsList [
             (if value.version == null then { } else { "@version" = value.version; })
+            (if value.short == null then { } else { inherit (value) short; })
           ];
         };
       }
