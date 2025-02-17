@@ -34,10 +34,14 @@
             overlays = [ self.overlays.default ];
           };
 
-          packages = rec {
-            default = firewalld;
-            inherit (pkgs) firewalld;
-          };
+          packages =
+            let
+              firewalld = pkgs.firewalld;
+            in
+            {
+              default = firewalld;
+              inherit firewalld;
+            };
         };
     };
 }
