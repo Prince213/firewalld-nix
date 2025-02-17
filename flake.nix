@@ -13,6 +13,14 @@
     }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       flake = {
+        nixosModules =
+          let
+            firewalld = ./modules;
+          in
+          {
+            default = firewalld;
+            inherit firewalld;
+          };
         overlays.default = self: super: {
           firewalld = super.callPackage ./package.nix { };
         };
