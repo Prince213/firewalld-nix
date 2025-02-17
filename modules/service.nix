@@ -26,6 +26,10 @@ in
             type = lib.types.nullOr lib.types.nonEmptyStr;
             default = null;
           };
+          description = lib.mkOption {
+            type = lib.types.nullOr lib.types.nonEmptyStr;
+            default = null;
+          };
         };
       }
     );
@@ -39,6 +43,7 @@ in
           service = lib.mergeAttrsList [
             (if value.version == null then { } else { "@version" = value.version; })
             (if value.short == null then { } else { inherit (value) short; })
+            (if value.description == null then { } else { inherit (value) description; })
           ];
         };
       }
