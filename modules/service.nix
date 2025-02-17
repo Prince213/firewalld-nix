@@ -63,6 +63,10 @@ in
             );
             default = [ ];
           };
+          protocols = lib.mkOption {
+            type = lib.types.listOf lib.types.nonEmptyStr;
+            default = [ ];
+          };
         };
       }
     );
@@ -82,6 +86,7 @@ in
               (if value.short == null then { } else { inherit (value) short; })
               (if value.description == null then { } else { inherit (value) description; })
               { port = builtins.map namePrependAt value.ports; }
+              { protocol = builtins.map (value: { "@value" = value; }) value.protocols; }
             ];
         };
       }
