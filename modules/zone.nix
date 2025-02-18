@@ -10,6 +10,7 @@ let
   format = pkgs.formats.xml { };
   common = import ./common.nix { inherit lib; };
   inherit (common)
+    filterNullAttrs
     mkPortOption
     mkXmlAttr
     portProtocolOptions
@@ -141,7 +142,7 @@ in
       name: value:
       lib.nameValuePair "firewalld/zones/${name}.xml" {
         source = format.generate "firewalld-zone-${name}.xml" {
-          zone = lib.filterAttrsRecursive (_: value: value != null) (
+          zone = filterNullAttrs (
             lib.mergeAttrsList [
               (toXmlAttrs { inherit (value) version target; })
               (mkXmlAttr "ingress-priority" value.ingressPriority)
@@ -157,9 +158,7 @@ in
                 protocol = builtins.map (mkXmlAttr "value") value.protocols;
                 icmp-block = builtins.map (mkXmlAttr "name") value.icmpBlocks;
                 masquerade = if value.masquerade then "" else null;
-                forward-port = builtins.map toXmlAttrs (
-                  builtins.map (lib.filterAttrsRecursive (_: value: value != null)) value.forwardPorts
-                );
+                forward-port = builtins.map toXmlAttrs (builtins.map filterNullAttrs value.forwardPorts);
                 source-port = builtins.map toXmlAttrs value.sourcePorts;
               }
             ]
