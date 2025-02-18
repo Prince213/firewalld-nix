@@ -8,27 +8,35 @@ let
   inherit (lib.types)
     either
     enum
+    nullOr
     port
     submodule
     ;
+  mkPortOption =
+    {
+      optional ? false,
+    }:
+    mkOption {
+      type =
+        let
+          type = either port (submodule {
+            options = {
+              from = mkOption { type = port; };
+              to = mkOption { type = port; };
+            };
+          });
+        in
+        if optional then (nullOr type) else type;
+      apply =
+        value: if builtins.isAttrs value then "${toString value.from}-${toString value.to}" else value;
+    };
 in
 {
+  inherit mkPortOption;
+
   portProtocolOptions = {
     options = {
-      port = mkOption {
-        type = either port (submodule {
-          options = {
-            from = mkOption { type = port; };
-            to = mkOption { type = port; };
-          };
-        });
-        apply =
-          value:
-          if builtins.isAttrs value then
-            "${toString value.from}-${toString value.to}"
-          else
-            "${toString value}";
-      };
+      port = mkPortOption { };
       protocol = mkOption {
         type = enum [
           "tcp"
