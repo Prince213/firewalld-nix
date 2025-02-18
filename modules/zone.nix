@@ -9,7 +9,7 @@ let
   cfg = config.services.firewalld;
   format = pkgs.formats.xml { };
   common = import ./common.nix { inherit lib; };
-  inherit (common) portProtocolOptions;
+  inherit (common) mkPortOption portProtocolOptions protocolOption;
   inherit (lib) mkOption;
   inherit (lib.types)
     attrTag
@@ -106,6 +106,22 @@ in
           type = bool;
           default = false;
         };
+        forwardPorts = mkOption {
+          type = listOf (submodule {
+            options = {
+              port = mkPortOption { };
+              protocol = protocolOption;
+              to-port = (mkPortOption { optional = true; }) // {
+                default = null;
+              };
+              to-addr = mkOption {
+                type = nullOr nonEmptyStr;
+                default = null;
+              };
+            };
+          });
+          default = [ ];
+        };
         sourcePorts = mkOption {
           type = listOf (submodule portProtocolOptions);
           default = [ ];
@@ -140,6 +156,9 @@ in
                   protocol = builtins.map (toXmlAttr' "value") value.protocols;
                   icmp-block = builtins.map (toXmlAttr' "name") value.icmpBlocks;
                   masquerade = if value.masquerade then "" else null;
+                  forward-port = builtins.map toXmlAttr (
+                    builtins.map (lib.filterAttrsRecursive (_: value: value != null)) value.forwardPorts
+                  );
                   source-port = builtins.map toXmlAttr value.sourcePorts;
                 }
               ]
