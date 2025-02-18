@@ -43,6 +43,8 @@ in
   inherit mkPortOption;
   inherit protocolOption;
 
+  mkXmlAttr = name: value: { "@${name}" = value; };
+
   portProtocolOptions = {
     options = {
       port = mkPortOption { };
