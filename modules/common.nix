@@ -43,6 +43,7 @@ in
   inherit mkPortOption;
   inherit protocolOption;
 
+  toXmlAttrs = lib.mapAttrs' (name': lib.nameValuePair ("@" + name'));
   mkXmlAttr = name: value: { "@${name}" = value; };
 
   portProtocolOptions = {
