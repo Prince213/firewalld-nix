@@ -145,6 +145,7 @@ in
           zone =
             let
               mkXmlAttrList = name: builtins.map (mkXmlAttr name);
+              mkXmlTag = value: if value then "" else null;
             in
             filterNullAttrs (
               lib.mergeAttrsList [
@@ -154,14 +155,14 @@ in
                 {
                   interface = mkXmlAttrList "name" value.interfaces;
                   source = builtins.map toXmlAttrs value.sources;
-                  icmp-block-inversion = if value.icmpBlockInversion then "" else null;
-                  forward = if value.forward then "" else null;
+                  icmp-block-inversion = mkXmlTag value.icmpBlockInversion;
+                  forward = mkXmlTag value.forward;
                   inherit (value) short description;
                   service = mkXmlAttrList "name" value.services;
                   port = builtins.map toXmlAttrs value.ports;
                   protocol = mkXmlAttrList "value" value.protocols;
                   icmp-block = mkXmlAttrList "name" value.icmpBlocks;
-                  masquerade = if value.masquerade then "" else null;
+                  masquerade = mkXmlTag value.masquerade;
                   forward-port = builtins.map toXmlAttrs (builtins.map filterNullAttrs value.forwardPorts);
                   source-port = builtins.map toXmlAttrs value.sourcePorts;
                 }
