@@ -142,27 +142,31 @@ in
       name: value:
       lib.nameValuePair "firewalld/zones/${name}.xml" {
         source = format.generate "firewalld-zone-${name}.xml" {
-          zone = filterNullAttrs (
-            lib.mergeAttrsList [
-              (toXmlAttrs { inherit (value) version target; })
-              (mkXmlAttr "ingress-priority" value.ingressPriority)
-              (mkXmlAttr "egress-priority" value.egressPriority)
-              {
-                interface = builtins.map (mkXmlAttr "name") value.interfaces;
-                source = builtins.map toXmlAttrs value.sources;
-                icmp-block-inversion = if value.icmpBlockInversion then "" else null;
-                forward = if value.forward then "" else null;
-                inherit (value) short description;
-                service = builtins.map (mkXmlAttr "name") value.services;
-                port = builtins.map toXmlAttrs value.ports;
-                protocol = builtins.map (mkXmlAttr "value") value.protocols;
-                icmp-block = builtins.map (mkXmlAttr "name") value.icmpBlocks;
-                masquerade = if value.masquerade then "" else null;
-                forward-port = builtins.map toXmlAttrs (builtins.map filterNullAttrs value.forwardPorts);
-                source-port = builtins.map toXmlAttrs value.sourcePorts;
-              }
-            ]
-          );
+          zone =
+            let
+              mkXmlAttrList = name: builtins.map (mkXmlAttr name);
+            in
+            filterNullAttrs (
+              lib.mergeAttrsList [
+                (toXmlAttrs { inherit (value) version target; })
+                (mkXmlAttr "ingress-priority" value.ingressPriority)
+                (mkXmlAttr "egress-priority" value.egressPriority)
+                {
+                  interface = mkXmlAttrList "name" value.interfaces;
+                  source = builtins.map toXmlAttrs value.sources;
+                  icmp-block-inversion = if value.icmpBlockInversion then "" else null;
+                  forward = if value.forward then "" else null;
+                  inherit (value) short description;
+                  service = mkXmlAttrList "name" value.services;
+                  port = builtins.map toXmlAttrs value.ports;
+                  protocol = mkXmlAttrList "value" value.protocols;
+                  icmp-block = mkXmlAttrList "name" value.icmpBlocks;
+                  masquerade = if value.masquerade then "" else null;
+                  forward-port = builtins.map toXmlAttrs (builtins.map filterNullAttrs value.forwardPorts);
+                  source-port = builtins.map toXmlAttrs value.sourcePorts;
+                }
+              ]
+            );
         };
       }
     ) cfg.zones;
