@@ -9,7 +9,7 @@ let
   cfg = config.services.firewalld;
   format = pkgs.formats.xml { };
   common = import ./common.nix { inherit lib; };
-  inherit (common) mkXmlAttr portProtocolOptions;
+  inherit (common) mkXmlAttr portProtocolOptions toXmlAttrs;
   inherit (lib) mkOption;
   inherit (lib.types)
     attrsOf
@@ -83,24 +83,20 @@ in
       name: value:
       lib.nameValuePair "firewalld/services/${name}.xml" {
         source = format.generate "firewalld-service-${name}.xml" {
-          service =
-            let
-              toXmlAttr = lib.mapAttrs' (name': lib.nameValuePair ("@" + name'));
-            in
-            lib.filterAttrsRecursive (_: value: value != null) (
-              lib.mergeAttrsList [
-                (toXmlAttr { inherit (value) version; })
-                {
-                  inherit (value) short description;
-                  port = builtins.map toXmlAttr value.ports;
-                  protocol = builtins.map (mkXmlAttr "value") value.protocols;
-                  source-port = builtins.map toXmlAttr value.sourcePorts;
-                  destination = toXmlAttr value.destination;
-                  include = builtins.map (mkXmlAttr "service") value.includes;
-                  helper = builtins.map (mkXmlAttr "name") value.helpers;
-                }
-              ]
-            );
+          service = lib.filterAttrsRecursive (_: value: value != null) (
+            lib.mergeAttrsList [
+              (toXmlAttrs { inherit (value) version; })
+              {
+                inherit (value) short description;
+                port = builtins.map toXmlAttrs value.ports;
+                protocol = builtins.map (mkXmlAttr "value") value.protocols;
+                source-port = builtins.map toXmlAttrs value.sourcePorts;
+                destination = toXmlAttrs value.destination;
+                include = builtins.map (mkXmlAttr "service") value.includes;
+                helper = builtins.map (mkXmlAttr "name") value.helpers;
+              }
+            ]
+          );
         };
       }
     ) cfg.services;
