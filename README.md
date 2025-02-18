@@ -2,6 +2,37 @@
 
 firewalld-nix brings [FirewallD](https://firewalld.org/) to NixOS.
 
+## Usage
+
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    firewalld-nix = {
+      url = "sourcehut:~prince213/firewalld-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  outputs =
+    { nixpkgs, firewalld-nix, ... }:
+    {
+      nixosConfigurations.system = nixpkgs.lib.nixosSystem {
+        modules = [
+          firewalld-nix.nixosModules.default
+          {
+            services.firewalld.enable = true;
+
+            # pick one
+            services.firewalld.package = firewalld-nix.packages.x86_64-linux.firewalld;
+            nixpkgs.overlays = [ firewalld-nix.overlays.default ];
+          }
+        ];
+      };
+    };
+}
+```
+
 ## License
 
 ```
