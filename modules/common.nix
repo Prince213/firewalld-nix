@@ -45,6 +45,7 @@ in
 
   toXmlAttrs = lib.mapAttrs' (name': lib.nameValuePair ("@" + name'));
   mkXmlAttr = name: value: { "@${name}" = value; };
+  filterNullAttrs = lib.filterAttrsRecursive (_: value: value != null);
 
   portProtocolOptions = {
     options = {
