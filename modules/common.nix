@@ -30,21 +30,23 @@ let
       apply =
         value: if builtins.isAttrs value then "${toString value.from}-${toString value.to}" else value;
     };
+  protocolOption = mkOption {
+    type = enum [
+      "tcp"
+      "udp"
+      "sctp"
+      "dccp"
+    ];
+  };
 in
 {
   inherit mkPortOption;
+  inherit protocolOption;
 
   portProtocolOptions = {
     options = {
       port = mkPortOption { };
-      protocol = mkOption {
-        type = enum [
-          "tcp"
-          "udp"
-          "sctp"
-          "dccp"
-        ];
-      };
+      protocol = protocolOption;
     };
   };
 }
