@@ -1,5 +1,7 @@
 # firewalld-nix
 
+firewalld-nix brings [FirewallD](https://firewalld.org/) to NixOS.
+
 ## License
 
 ```
