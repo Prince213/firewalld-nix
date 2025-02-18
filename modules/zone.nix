@@ -9,7 +9,12 @@ let
   cfg = config.services.firewalld;
   format = pkgs.formats.xml { };
   common = import ./common.nix { inherit lib; };
-  inherit (common) mkPortOption portProtocolOptions protocolOption;
+  inherit (common)
+    mkPortOption
+    mkXmlAttr
+    portProtocolOptions
+    protocolOption
+    ;
   inherit (lib) mkOption;
   inherit (lib.types)
     attrTag
@@ -138,23 +143,22 @@ in
           zone =
             let
               toXmlAttr = lib.mapAttrs' (name': lib.nameValuePair ("@" + name'));
-              toXmlAttr' = name: value: { "@${name}" = value; };
             in
             lib.filterAttrsRecursive (_: value: value != null) (
               lib.mergeAttrsList [
                 (toXmlAttr { inherit (value) version target; })
-                (toXmlAttr' "ingress-priority" value.ingressPriority)
-                (toXmlAttr' "egress-priority" value.egressPriority)
+                (mkXmlAttr "ingress-priority" value.ingressPriority)
+                (mkXmlAttr "egress-priority" value.egressPriority)
                 {
-                  interface = builtins.map (toXmlAttr' "name") value.interfaces;
+                  interface = builtins.map (mkXmlAttr "name") value.interfaces;
                   source = builtins.map toXmlAttr value.sources;
                   icmp-block-inversion = if value.icmpBlockInversion then "" else null;
                   forward = if value.forward then "" else null;
                   inherit (value) short description;
-                  service = builtins.map (toXmlAttr' "name") value.services;
+                  service = builtins.map (mkXmlAttr "name") value.services;
                   port = builtins.map toXmlAttr value.ports;
-                  protocol = builtins.map (toXmlAttr' "value") value.protocols;
-                  icmp-block = builtins.map (toXmlAttr' "name") value.icmpBlocks;
+                  protocol = builtins.map (mkXmlAttr "value") value.protocols;
+                  icmp-block = builtins.map (mkXmlAttr "name") value.icmpBlocks;
                   masquerade = if value.masquerade then "" else null;
                   forward-port = builtins.map toXmlAttr (
                     builtins.map (lib.filterAttrsRecursive (_: value: value != null)) value.forwardPorts
