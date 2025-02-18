@@ -4,6 +4,9 @@ firewalld-nix brings [FirewallD](https://firewalld.org/) to NixOS.
 
 ## Usage
 
+Below is a minimal `flake.nix` to get started.
+See `example.nix` for an example firewalld configuration.
+
 ```nix
 {
   inputs = {
