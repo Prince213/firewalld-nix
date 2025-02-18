@@ -133,6 +133,10 @@ in
           type = listOf (submodule portProtocolOptions);
           default = [ ];
         };
+        rules = mkOption {
+          type = listOf (format.type);
+          default = [ ];
+        };
       };
     });
   };
@@ -165,6 +169,7 @@ in
                   masquerade = mkXmlTag value.masquerade;
                   forward-port = builtins.map toXmlAttrs (builtins.map filterNullAttrs value.forwardPorts);
                   source-port = builtins.map toXmlAttrs value.sourcePorts;
+                  rule = value.rules;
                 }
               ]
             );
