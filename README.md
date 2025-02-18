@@ -2,6 +2,14 @@
 
 firewalld-nix brings [FirewallD](https://firewalld.org/) to NixOS.
 
+## Status
+
+### NixOS Module
+
+- [X] `firewalld.conf(5)`: done
+- [X] `firewalld.service(5)`: done
+- [X] `firewalld.zone(5)`: mostly, except `rule`
+
 ## Usage
 
 Below is a minimal `flake.nix` to get started.
