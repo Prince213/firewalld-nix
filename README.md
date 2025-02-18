@@ -4,6 +4,14 @@ firewalld-nix brings [FirewallD](https://firewalld.org/) to NixOS.
 
 ## Status
 
+### Package
+
+- [X] `firewall-applet`: working
+- [X] `firewall-cmd`: working
+- [X] `firewall-config`: working
+- [X] `firewall-offline-cmd`: use nixos module instead
+- [X] `firewalld`: working
+
 ### NixOS Module
 
 - [X] `firewalld.conf(5)`: done
