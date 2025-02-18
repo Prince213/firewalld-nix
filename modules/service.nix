@@ -9,7 +9,7 @@ let
   cfg = config.services.firewalld;
   format = pkgs.formats.xml { };
   common = import ./common.nix { inherit lib; };
-  inherit (common) portProtocolOptions;
+  inherit (common) mkXmlAttr portProtocolOptions;
   inherit (lib) mkOption;
   inherit (lib.types)
     attrsOf
@@ -86,7 +86,6 @@ in
           service =
             let
               toXmlAttr = lib.mapAttrs' (name': lib.nameValuePair ("@" + name'));
-              toXmlAttr' = name: value: { "@${name}" = value; };
             in
             lib.filterAttrsRecursive (_: value: value != null) (
               lib.mergeAttrsList [
@@ -94,11 +93,11 @@ in
                 {
                   inherit (value) short description;
                   port = builtins.map toXmlAttr value.ports;
-                  protocol = builtins.map (toXmlAttr' "value") value.protocols;
+                  protocol = builtins.map (mkXmlAttr "value") value.protocols;
                   source-port = builtins.map toXmlAttr value.sourcePorts;
                   destination = toXmlAttr value.destination;
-                  include = builtins.map (toXmlAttr' "service") value.includes;
-                  helper = builtins.map (toXmlAttr' "name") value.helpers;
+                  include = builtins.map (mkXmlAttr "service") value.includes;
+                  helper = builtins.map (mkXmlAttr "name") value.helpers;
                 }
               ]
             );
