@@ -157,6 +157,13 @@ in
           "dhcpv6-client"
         ];
       };
+      external = {
+        forward = true;
+        services = [
+          "ssh"
+        ];
+        masquerade = true;
+      };
     };
 
     environment.etc = lib.mapAttrs' (
