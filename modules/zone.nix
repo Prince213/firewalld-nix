@@ -164,6 +164,12 @@ in
         ];
         masquerade = true;
       };
+      dmz = {
+        forward = true;
+        services = [
+          "ssh"
+        ];
+      };
     };
 
     environment.etc = lib.mapAttrs' (
