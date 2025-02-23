@@ -143,6 +143,10 @@ in
 
   config = lib.mkIf cfg.enable {
     services.firewalld.zones = {
+      drop = {
+        target = "DROP";
+        forward = true;
+      };
       block = {
         forward = true;
       };
