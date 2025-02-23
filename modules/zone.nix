@@ -170,6 +170,13 @@ in
           "ssh"
         ];
       };
+      work = {
+        forward = true;
+        services = [
+          "ssh"
+          "dhcpv6-client"
+        ];
+      };
     };
 
     environment.etc = lib.mapAttrs' (
