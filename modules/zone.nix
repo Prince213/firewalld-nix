@@ -143,6 +143,9 @@ in
 
   config = lib.mkIf cfg.enable {
     services.firewalld.zones = {
+      block = {
+        forward = true;
+      };
       public = {
         forward = true;
         services = [
