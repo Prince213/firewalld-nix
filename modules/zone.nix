@@ -186,6 +186,15 @@ in
           "dhcpv6-client"
         ];
       };
+      internal = {
+        forward = true;
+        services = [
+          "ssh"
+          "mdns"
+          "samba-client"
+          "dhcpv6-client"
+        ];
+      };
     };
 
     environment.etc = lib.mapAttrs' (
