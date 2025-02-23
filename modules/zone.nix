@@ -195,6 +195,10 @@ in
           "dhcpv6-client"
         ];
       };
+      trusted = {
+        target = "ACCEPT";
+        forward = true;
+      };
     };
 
     environment.etc = lib.mapAttrs' (
