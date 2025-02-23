@@ -142,6 +142,16 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    services.firewalld.zones = {
+      public = {
+        forward = true;
+        services = [
+          "ssh"
+          "dhcpv6-client"
+        ];
+      };
+    };
+
     environment.etc = lib.mapAttrs' (
       name: value:
       lib.nameValuePair "firewalld/zones/${name}.xml" {
