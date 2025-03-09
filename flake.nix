@@ -2,6 +2,13 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
+    nix-packages = {
+      url = "sourcehut:~prince213/nix-packages";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "flake-parts";
+      };
+    };
   };
 
   outputs =
@@ -9,6 +16,7 @@
       self,
       nixpkgs,
       flake-parts,
+      nix-packages,
       ...
     }:
     flake-parts.lib.mkFlake { inherit inputs; } {
@@ -21,9 +29,7 @@
             default = firewalld;
             inherit firewalld;
           };
-        overlays.default = self: super: {
-          firewalld = super.callPackage ./package.nix { };
-        };
+        overlays.default = nix-packages.overlays.firewalld;
       };
       systems = [ "x86_64-linux" ];
       perSystem =
