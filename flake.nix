@@ -1,9 +1,10 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    # nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:Prince213/nixpkgs/pyqt6-dbus";
     flake-parts.url = "github:hercules-ci/flake-parts";
     nix-packages = {
-      url = "sourcehut:~prince213/nix-packages";
+      url = "sourcehut:~prince213/nix-packages/firewalld-qt6";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-parts.follows = "flake-parts";
