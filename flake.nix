@@ -1,25 +1,11 @@
 {
   inputs = {
-    # nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    nixpkgs.url = "github:Prince213/nixpkgs/pyqt6-dbus";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
-    nix-packages = {
-      url = "sourcehut:~prince213/nix-packages/firewalld-qt6";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-parts.follows = "flake-parts";
-      };
-    };
   };
 
   outputs =
-    inputs@{
-      self,
-      nixpkgs,
-      flake-parts,
-      nix-packages,
-      ...
-    }:
+    inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       flake = {
         nixosModules =
@@ -30,17 +16,11 @@
             default = firewalld;
             inherit firewalld;
           };
-        overlays.default = nix-packages.overlays.firewalld;
       };
       systems = [ "x86_64-linux" ];
       perSystem =
-        { system, pkgs, ... }:
+        { pkgs, ... }:
         {
-          _module.args.pkgs = import nixpkgs {
-            inherit system;
-            overlays = [ self.overlays.default ];
-          };
-
           packages =
             let
               firewalld = pkgs.firewalld;
