@@ -27,6 +27,7 @@ See `example.nix` for an example firewalld configuration.
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-firewalld.url = "github:Prince213/nixpkgs/firewalld-package";
     firewalld-nix = {
       url = "sourcehut:~prince213/firewalld-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -34,18 +35,30 @@ See `example.nix` for an example firewalld configuration.
   };
 
   outputs =
-    { nixpkgs, firewalld-nix, ... }:
+    {
+      nixpkgs,
+      nixpkgs-firewalld,
+      firewalld-nix,
+      ...
+    }:
     {
       nixosConfigurations.system = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
         modules = [
           firewalld-nix.nixosModules.default
-          {
-            services.firewalld.enable = true;
-
-            # pick one
-            services.firewalld.package = firewalld-nix.packages.x86_64-linux.firewalld;
-            nixpkgs.overlays = [ firewalld-nix.overlays.default ];
-          }
+          (
+            { pkgs, ... }:
+            {
+              services.firewalld = {
+                enable = true;
+                package =
+                  let
+                    pkgs' = import nixpkgs-firewalld { inherit (pkgs) system; };
+                  in
+                  pkgs'.firewalld;
+              };
+            }
+          )
         ];
       };
     };
