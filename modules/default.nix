@@ -40,6 +40,15 @@ in
       documentation = [ "man:firewalld(1)" ];
       aliases = [ "dbus-org.fedoraproject.FirewallD1.service" ];
       wantedBy = [ "multi-user.target" ];
+      environment.NIX_FIREWALLD_CONFIG_PATH =
+        let
+          path = pkgs.buildEnv {
+            name = "firewalld-config-paths";
+            paths = config.environment.systemPackages;
+            pathsToLink = [ "/lib/firewalld" ];
+          };
+        in
+        "${path}/lib/firewalld";
       serviceConfig = {
         EnvironmentFile = "-/etc/sysconfig/firewalld";
         ExecStart = "${cfg.package}/bin/firewalld --nofork --nopid $FIREWALLD_ARGS";
