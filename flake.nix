@@ -18,17 +18,5 @@
           };
       };
       systems = [ "x86_64-linux" ];
-      perSystem =
-        { pkgs, ... }:
-        {
-          packages =
-            let
-              firewalld = pkgs.firewalld;
-            in
-            {
-              default = firewalld;
-              inherit firewalld;
-            };
-        };
     };
 }
